@@ -1,0 +1,19 @@
+name: Deploy to dev
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment: dev
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Deploy to dev
+        run: |
+          # Add your deployment commands here
+          echo "Deploying to dev environment"
