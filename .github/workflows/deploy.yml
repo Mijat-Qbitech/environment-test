@@ -14,7 +14,12 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
-      - name: Deploy to dev
+      - name: Download build metadata
+        uses: actions/download-artifact@v2
+        with:
+          name: build-metadata
+
+      - name: Echo Docker image tag
         run: |
-          # Add your deployment commands here
-          echo "Deploying to dev environment"
+          IMAGE_TAG=$(cat build-metadata.txt | grep IMAGE_TAG | cut -d '=' -f 2)
+          echo "The Docker image tag is: $IMAGE_TAG"
