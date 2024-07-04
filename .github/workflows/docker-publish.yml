@@ -8,7 +8,6 @@ name: Docker
 on:
   push:
     branches: [ "main" ]
-    # Publish semver tags as releases.
     tags: [ 'v*.*.*' ]
   pull_request:
     branches: [ "main" ]
@@ -96,5 +95,20 @@ jobs:
         # against the sigstore community Fulcio instance.
         run: echo "${TAGS}" | xargs -I {} cosign sign --yes {}@${DIGEST}
       
-      - name: Save image tag
-        run: echo "IMAGE_TAG=$IMAGE_NAME" > build-metadata.txt
+            # Assuming steps.meta.outputs.tags contains the Docker tag we want to use as the Git tag
+      - name: Check if Git tag exists
+        id: check_tag
+        run: |
+          if git rev-parse ${{ steps.meta.outputs.tags }} >/dev/null 2>&1; then
+            echo "::set-output name=exists::true"
+          else
+            echo "::set-output name=exists::false"
+          fi
+        shell: bash
+
+      - name: Create and push Git tag
+        if: steps.check_tag.outputs.exists == 'false'
+        run: |
+          git tag ${{ steps.meta.outputs.tags }}
+          git push origin ${{ steps.meta.outputs.tags }}
+        shell: bash

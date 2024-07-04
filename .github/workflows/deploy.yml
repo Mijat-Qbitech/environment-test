@@ -1,10 +1,8 @@
 name: Deploy to dev
 
 on:
-  workflow_run:
-    workflows: ["Docker"]
-    types:
-      - completed
+  push:
+    tags: [ 'api-v*' ]
 
 jobs:
   deploy:
@@ -21,5 +19,4 @@ jobs:
 
       - name: Echo Docker image tag
         run: |
-          IMAGE_TAG=$(cat build-metadata.txt | grep IMAGE_TAG | cut -d '=' -f 2)
           echo "The Docker image tag is: $IMAGE_TAG"
